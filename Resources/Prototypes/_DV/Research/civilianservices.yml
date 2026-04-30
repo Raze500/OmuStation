@@ -1,10 +1,8 @@
-# OmuStation - CivilianServices additions
-
 - type: technology
   id: AdvancedBotany
   name: research-technology-advanced-botany
   icon:
-    sprite: _Omu/Objects/Devices/plant_analyzer.rsi
+    sprite: _DV/Objects/Devices/plant_analyzer.rsi
     state: icon
   discipline: CivilianServices
   tier: 2
