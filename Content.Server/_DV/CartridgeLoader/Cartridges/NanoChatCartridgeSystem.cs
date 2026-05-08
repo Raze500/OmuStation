@@ -30,6 +30,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 using Content.Shared.CCVar;
 using Robust.Shared.Configuration;
+using Content.Shared._Omu.MobilePhone;
 using Robust.Shared.Utility; // Goob
 
 namespace Content.Server._DV.CartridgeLoader.Cartridges;
@@ -377,6 +378,8 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         var deliverableRecipients = new List<Entity<NanoChatCardComponent>>();
         foreach (var recipient in foundRecipients)
         {
+            var delivered = false;
+
             // Find any cartridges that have this card
             var cartridgeQuery = EntityQueryEnumerator<NanoChatCartridgeComponent, ActiveRadioComponent>();
             while (cartridgeQuery.MoveNext(out var receiverUid, out var receiverCart, out _))
@@ -408,8 +411,30 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
 
                 // Found valid cartridge that can receive
                 deliverableRecipients.Add(recipient);
+                delivered = true;
                 break; // Only need one valid cartridge per card
             }
+
+            if (delivered)
+                continue;
+
+            // Also check if recipient is a standalone mobile phone
+            if (!HasComp<MobilePhoneComponent>(recipient.Owner) || !HasComp<ActiveRadioComponent>(recipient.Owner))
+                continue;
+
+            var phoneRecipientStation = _station.GetOwningStation(recipient.Owner);
+            var phoneSenderStation = _station.GetOwningStation(sender);
+
+            if (phoneRecipientStation == null || phoneSenderStation == null)
+                continue;
+
+            if (!channel.LongRange && phoneRecipientStation != phoneSenderStation)
+                continue;
+
+            if (!HasActiveServer(phoneSenderStation.Value) || !HasActiveServer(phoneRecipientStation.Value))
+                continue;
+
+            deliverableRecipients.Add(recipient);
         }
 
         return (deliverableRecipients.Count == 0, deliverableRecipients);

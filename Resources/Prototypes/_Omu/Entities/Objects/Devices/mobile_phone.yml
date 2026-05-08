@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2025 OmuStation Contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+- type: entity
+  parent: BaseItem
+  id: MobilePhone
+  name: mobile phone
+  description: A compact device for sending and receiving NanoChat messages.
+  components:
+  - type: Sprite
+    sprite: Objects/Devices/pda.rsi
+    state: pda
+  - type: Icon
+    sprite: Objects/Devices/pda.rsi
+    state: pda
+  - type: Item
+    size: Small
+  - type: NanoChatCard
+  - type: MobilePhone
+  - type: ActiveRadio
+    channels:
+    - Common
+  - type: ActivatableUI
+    key: enum.MobilePhoneUiKey.Key
+    inHandsOnly: true
+  - type: UserInterface
+    interfaces:
+      enum.MobilePhoneUiKey.Key:
+        type: MobilePhoneBoundUserInterface
